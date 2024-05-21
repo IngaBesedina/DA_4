@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from dotenv import load_dotenv
+"""
+Самостоятельно изучите работу с пакетом python-dotenv .
+Модифицируйте программу задания 1 таким образом,
+чтобы значения необходимых переменных окружения считывались
+из файла .env .
+"""
+
 import argparse
 import json
 import os.path
 import sys
+
+from dotenv import load_dotenv
 
 
 def add_student(staff, surname, group_number, grades):
@@ -13,11 +21,7 @@ def add_student(staff, surname, group_number, grades):
     Добавить данные о студенте.
     """
     staff.append(
-        {
-            "surname": surname,
-            "group_number": group_number,
-            "grades": grades
-        }
+        {"surname": surname, "group_number": group_number, "grades": grades}
     )
 
     return staff
@@ -30,19 +34,13 @@ def display_students(staff):
     # Проверить, что список студентов не пуст.
     if staff:
         # Заголовок таблицы.
-        line = '+-{}-+-{}-+-{}-+-{}-+'.format(
-            '-' * 4,
-            '-' * 30,
-            '-' * 20,
-            '-' * 14
+        line = "+-{}-+-{}-+-{}-+-{}-+".format(
+            "-" * 4, "-" * 30, "-" * 20, "-" * 14
         )
         print(line)
         print(
-            '| {:^4} | {:^30} | {:^20} | {:^14} |'.format(
-                "№",
-                "Ф.И.О.",
-                "Группа",
-                "Оценки"
+            "| {:^4} | {:^30} | {:^20} | {:^14} |".format(
+                "№", "Ф.И.О.", "Группа", "Оценки"
             )
         )
         print(line)
@@ -50,11 +48,11 @@ def display_students(staff):
         # Вывести данные о всех студентах.
         for idx, student in enumerate(staff, 1):
             print(
-                '| {:>4} | {:<30} | {:<20} | {:>14} |'.format(
+                "| {:>4} | {:<30} | {:<20} | {:>14} |".format(
                     idx,
-                    student.get('surname', ''),
-                    student.get('group_number', ''),
-                    ', '.join(str(el) for el in student.get('grades')[0])
+                    student.get("surname", ""),
+                    student.get("group_number", ""),
+                    ", ".join(str(el) for el in student.get("grades")[0]),
                 )
             )
         print(line)
@@ -67,7 +65,7 @@ def select_students(staff):
     # Сформировать список студентов, имеющих оценки 4 и 5.
     result = []
     for student in staff:
-        if all(int(grade) >= 4 for grade in student['grades'][0]):
+        if all(int(grade) >= 4 for grade in student["grades"][0]):
             result.append(student)
 
     # Возвратить список выбранных студентов.
@@ -101,24 +99,20 @@ def main(command_line=None):
         "--data",
         action="store",
         required=False,
-        help="The data file name"
+        help="The data file name",
     )
 
     # Создать основной парсер командной строки.
     parser = argparse.ArgumentParser("students")
     parser.add_argument(
-        "--version",
-        action="version",
-        version="%(prog)s 0.1.0"
+        "--version", action="version", version="%(prog)s 0.1.0"
     )
 
     subparsers = parser.add_subparsers(dest="command")
 
     # Создать субпарсер для добавления студента.
     add = subparsers.add_parser(
-        "add",
-        parents=[file_parser],
-        help="Add a new student"
+        "add", parents=[file_parser], help="Add a new student"
     )
     add.add_argument(
         "-sn",
@@ -126,37 +120,33 @@ def main(command_line=None):
         action="store",
         type=str,
         required=True,
-        help="The student's surname"
+        help="The student's surname",
     )
     add.add_argument(
         "-gn",
         "--group_number",
         action="store",
         type=int,
-        help="The student's group"
+        help="The student's group",
     )
     add.add_argument(
         "-g",
         "--grades",
         action="store",
-        nargs='+',
+        nargs="+",
         type=list,
         required=True,
-        help="grades"
+        help="grades",
     )
 
     # Создать субпарсер для отображения всех студентов.
     _ = subparsers.add_parser(
-        "display",
-        parents=[file_parser],
-        help="Display all students"
+        "display", parents=[file_parser], help="Display all students"
     )
 
     # Создать субпарсер для выбора студентов.
-    select = subparsers.add_parser(
-        "select",
-        parents=[file_parser],
-        help="Select the students"
+    _ = subparsers.add_parser(
+        "select", parents=[file_parser], help="Select the students"
     )
 
     # Выполнить разбор аргументов командной строки.
@@ -164,11 +154,11 @@ def main(command_line=None):
 
     # Загрузка переменных окружения из файла .env
     load_dotenv()
-    
+
     # Получить имя файла.
     data_file = args.data
     if not data_file:
-        data_file = os.getenv('STUDENTS_DATA')
+        data_file = os.getenv("STUDENTS_DATA")
     if not data_file:
         print("The data file name is absent", file=sys.stderr)
         sys.exit(1)
@@ -183,10 +173,7 @@ def main(command_line=None):
     # Добавить студента.
     if args.command == "add":
         students = add_student(
-            students,
-            args.surname,
-            args.group_number,
-            args.grades
+            students, args.surname, args.group_number, args.grades
         )
         is_dirty = True
 
